@@ -4,12 +4,19 @@ RUN apt-get update && apt-get install -y git
 
 RUN git clone https://github.com/antirez/dump1090.git
 
-RUN apt-get update && apt-get install -y \
-    git \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get install -y \
     build-essential \
     librtlsdr-dev \
     libusb-1.0-0-dev \
-    rtl-sdr
+    rtl-sdr \
+    libtool \
+    autoconf \
+    automake \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /dump1090
 
@@ -17,5 +24,19 @@ RUN make LDFLAGS="-lrtlsdr"
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "./dump1090 --interactive --net --ifile testfiles/modes1.bin --loop"]
+WORKDIR /
 
+RUN git clone https://github.com/Hamlib/Hamlib.git
+
+WORKDIR /Hamlib
+
+RUN chmod +x ./bootstrap && \
+    ./bootstrap && \
+    chmod +x ./configure && \
+    ./configure && \
+    make && \
+    make install
+
+COPY entrypoint.sh /entrypoint.sh
+
+CMD ["sh", "/entrypoint.sh"]
