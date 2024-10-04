@@ -1,6 +1,4 @@
 import requests
-import folium
-import webbrowser
 
 class AdsbClient:
 

@@ -6,7 +6,7 @@ class MapService:
 
     def __init__(self, api_client: AdsbClient) -> None:
         self.api_client = api_client
-        self.map_object = folium.Map(location=[37.0, 13.0], zoom_control=True, control_scale=True)
+        self.map_object = folium.Map(location=[38.0, 23.0], zoom_control=True, control_scale=True)
         self.map_object.save("map.html")
         webbrowser.open("map.html")
 

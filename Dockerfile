@@ -15,6 +15,7 @@ RUN apt-get install -y \
     autoconf \
     automake \
     pkg-config \
+    telnet \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -40,3 +41,5 @@ RUN chmod +x ./bootstrap && \
 COPY entrypoint.sh /entrypoint.sh
 
 CMD ["sh", "/entrypoint.sh"]
+
+
