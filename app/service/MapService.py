@@ -4,29 +4,20 @@ from app.dao.AdsbClient import AdsbClient
 
 class MapService:
 
-    def __init__(self, api_client: AdsbClient) -> None:
-        self.api_client = api_client
+    def __init__(self) -> None:
         self.map_object = folium.Map(location=[38.0, 23.0], zoom_control=True, control_scale=True)
         self.map_object.save("map.html")
         webbrowser.open("map.html")
 
 
-    def create_map(self):
-        data = self.api_client.getAdsb()
+    def create_map(self, data):
+        #altitude = data.get('altitude')
+        latitude = data.get('lat')
+        longitude = data.get('lon')
 
-        # iterate dictionary
-        for aircraft in data:
-            #altitude = aircraft.get('altitude')
-            #flight = aircraft.get('flight').strip()
-            #hex_code = aircraft.get('hex')
-            #speed = aircraft.get('speed')
-            #track = aircraft.get('track')
-            latitude = aircraft.get('lat')
-            longitude = aircraft.get('lon')
-
-            folium.Marker(location=[latitude,longitude ]).add_to(self.map_object)
-            self.map_object.save("map.html") # you have to refresh to see the route.
-            # TODO: Dynamic map
+        folium.Marker(location=[latitude,longitude ]).add_to(self.map_object)
+        self.map_object.save("map.html") # you have to refresh to see the route.
+        # TODO: Dynamic map
 
 
 

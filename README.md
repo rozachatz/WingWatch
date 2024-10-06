@@ -6,7 +6,7 @@ This app uses dump1090 linux app to receive ADSB data and show the location of t
 
 1)Power up software 
 docker build -t linux_app .
-docker run -it -p 8080:8080 --privileged -v /dev/swradio0:/dev/swradio0 -v /dev/ttyACM0:/dev/ttyACM0 linux_app
+docker run -it -p 8080:8080 --network host --privileged -v /dev/swradio0:/dev/swradio0 -v /dev/ttyACM0:/dev/ttyACM0 linux_app
 
 2)Connect to tcp and send commands to rotator
 telnet localhost 4532
