@@ -9,7 +9,6 @@ api_client = AdsbClient()
 map_service = MapService()
 rotator_client = RotatorClient()
 main_service = MainService(api_client, rotator_client, map_service)
-
 while True:
-    rotator_client.set_rotator()
-    time.sleep(5)
+    main_service.execute()
+    time.sleep(1)

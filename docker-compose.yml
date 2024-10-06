@@ -1,0 +1,25 @@
+services:
+
+  hamlib:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /dev/ttyACM0:/dev/ttyACM0
+    command: /Hamlib/tests/rotctld -m 603 -r /dev/ttyACM0 -t 4532 -s 115200 -T 127.0.0.1 -C timeout=2000 -vvvvv
+    ports:
+      - "4532:4532"
+    network_mode: host
+    privileged: true
+
+  dump1090:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: /dump1090/dump1090 --interactive --net
+    volumes:
+      - /dev/swradio0:/dev/swradio0
+    ports:
+      - "8080:8080"
+    network_mode: host
+    privileged: true

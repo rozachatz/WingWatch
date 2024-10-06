@@ -11,13 +11,14 @@ class MapService:
 
 
     def create_map(self, data):
-        #altitude = data.get('altitude')
-        latitude = data.get('lat')
-        longitude = data.get('lon')
+        if isinstance(data, list):
+            for entry in data:
+                latitude = entry['lat']
+                longitude = entry['lon']
 
-        folium.Marker(location=[latitude,longitude ]).add_to(self.map_object)
-        self.map_object.save("map.html") # you have to refresh to see the route.
-        # TODO: Dynamic map
+                folium.Marker(location=[latitude,longitude ]).add_to(self.map_object)
+                self.map_object.save("map.html") # you have to refresh to see the route.
+                # TODO: Dynamic map
 
 
 
