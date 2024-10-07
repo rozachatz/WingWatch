@@ -1,15 +1,13 @@
-This app uses dump1090 linux app to receive ADSB data and show the location of the plane in a map.
+WingWatch is an advanced aircraft tracking application that integrates ADS-B and radar data to provide real-time airplane location tracking and antenna rotator configuration.
 
-**TO DO**
-1) Integrate the passive radar algorithm and show respective marker on map.
-2) Dockerize rotator interface app and communicate with antenna rotator. (done, TODO: tcp connection script)
+# Key Features:
+##Real-time Tracking: Displays airplane coordinates from both ADS-B and radar sources on an interactive map.
+##ADSB Data Reception: Utilizes the dump1090 application to effectively receive and process ADS-B data, ensuring accurate positioning of aircraft.
+##Antenna Rotator Configuration: Leverages Hamlib software to configure and control your antenna rotator, allowing for optimized tracking of airborne vehicles.
+##Docker Compose Integration: Simplifies deployment and depedency management of the application through Docker Compose.
 
-1)Power up software 
-docker build -t linux_app .
-docker run -it -p 8080:8080 --network host --privileged -v /dev/swradio0:/dev/swradio0 -v /dev/ttyACM0:/dev/ttyACM0 linux_app
+To build and start the application, run the following command:
 
-2)Connect to tcp and send commands to rotator
-telnet localhost 4532
-P 130 10
-
-
+bash
+Copy code
+docker-compose up --build
