@@ -16,5 +16,9 @@ class MainService:
         data = self.api_client.getAdsb()
         if data:
             self.map_service.create_map(data)
-            [azym, el] = self.transformer.transform_coordinates(data[0]['lat'], data[0]['long'], data[0]['el'])
+            first_element = data[0]
+            altitude = first_element['altitude']
+            lat = first_element['lat']
+            lon = first_element['lon']
+            azym, el = self.transformer.transform_coordinates(float(lat), float(lon), float(altitude))
             self.rotator_client.execute(azym, el)

@@ -1,3 +1,4 @@
 .env.secrets
 .venv
-map.html
+app/map.html
+.idea

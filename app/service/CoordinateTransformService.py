@@ -44,3 +44,4 @@ class CoordinateTransformService:
         azimuth, elevation = enu_to_az_el(enu_coordinates[0], enu_coordinates[1], enu_coordinates[2])
         print(f"Azimuth: {azimuth:.2f}°")
         print(f"Elevation: {elevation:.2f}°")
+        return azimuth, elevation
