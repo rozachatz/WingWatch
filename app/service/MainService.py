@@ -13,7 +13,7 @@ class MainService:
         self.transformer = transformer
 
     def execute(self):
-        data = self.api_client.getAdsb()
+        data = self.api_client.getAdsb().json()
         if data:
             self.map_service.create_map(data)
             first_element = data[0]
