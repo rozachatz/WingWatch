@@ -1,4 +1,5 @@
 .env.secrets
 .venv
-app/map.html
+tests/service/map.html
+app/service/map.html
 .idea
