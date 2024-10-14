@@ -1,6 +1,7 @@
 import socket
 import time
 
+
 class RotatorClient:
 
     def execute(self, az, el):
@@ -17,4 +18,3 @@ class RotatorClient:
         finally:
             print("Closing socket.")
             sock.close()
-

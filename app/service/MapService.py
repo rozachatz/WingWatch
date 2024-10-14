@@ -1,5 +1,7 @@
-import folium
 import webbrowser
+
+import folium
+
 
 class MapService:
 
@@ -8,19 +10,8 @@ class MapService:
         self.map_object.save("map.html")
         webbrowser.open("map.html")
 
-
     def create_map(self, data):
         if isinstance(data, list):
             for entry in data:
-                latitude = entry['lat']
-                longitude = entry['lon']
-
-                folium.Marker(location=[latitude,longitude ]).add_to(self.map_object)
-                self.map_object.save("map.html") # you have to refresh to see the route.
-                # TODO: Dynamic map
-
-
-
-
-
-
+                folium.Marker(location=[entry['lat'], entry['lon']]).add_to(self.map_object)
+                self.map_object.save("map.html")  # TODO: Dynamic map
