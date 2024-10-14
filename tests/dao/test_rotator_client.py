@@ -1,7 +1,9 @@
-from app.dao.RotatorClient import RotatorClient
+import time
+
 import pytest
 from testcontainers.compose import DockerCompose
-import time
+
+from app.dao.rotator_client import RotatorClient
 
 
 @pytest.fixture(scope="session")
@@ -20,6 +22,7 @@ def fastapi_container():
     compose.stop()
 
 
+@pytest.mark.skip(reason="Requires a rotator device.")
 def test_example(client, fastapi_container):
     client.execute(0, 0)
     client.execute(130, 10)

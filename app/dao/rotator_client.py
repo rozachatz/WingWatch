@@ -1,8 +1,8 @@
 import socket
 import time
 
-class RotatorClient:
 
+class RotatorClient:
     def execute(self, az, el):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('localhost', 4532)
@@ -17,4 +17,3 @@ class RotatorClient:
         finally:
             print("Closing socket.")
             sock.close()
-

@@ -2,7 +2,9 @@ import time
 
 import pytest
 from testcontainers.compose import DockerCompose
-from app.dao.AdsbClient import AdsbClient
+
+from app.dao.adsb_client import AdsbClient
+
 
 @pytest.fixture(scope="session")
 def client():
@@ -20,6 +22,7 @@ def fastapi_container():
     compose.stop()
 
 
+@pytest.mark.skip(reason="Requires a RTL SDR device.")
 def test_example(client, fastapi_container):
     response = client.getAdsb()
     assert response.status_code == 200
