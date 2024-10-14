@@ -1,6 +1,5 @@
 import folium
 import webbrowser
-from app.dao.AdsbClient import AdsbClient
 
 class MapService:
 
