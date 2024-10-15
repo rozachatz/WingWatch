@@ -1,8 +1,8 @@
 import pytest
 
-from app.dao.rotator_client import RotatorClient
-from app.service.coordinate_transform_service import CoordinateTransformService
-from app.service.rotator_configure_service import RotatorConfigureService
+from trackingapp.dao.rotator_client import RotatorClient
+from trackingapp.service.coordinate_transform_service import CoordinateTransformService
+from trackingapp.service.rotator_configure_service import RotatorConfigureService
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ import time
 import pytest
 from testcontainers.compose import DockerCompose
 
-from app.dao.adsb_client import AdsbClient
+from trackingapp.dao.adsb_client import AdsbClient
 
 
 @pytest.fixture(scope="session")

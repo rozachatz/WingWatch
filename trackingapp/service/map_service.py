@@ -10,8 +10,7 @@ class MapService:
         self.map_object.save("map.html")
         webbrowser.open("map.html")
 
-    def create_map(self, data):
-        if isinstance(data, list):
-            for entry in data:
-                folium.Marker(location=[entry['lat'], entry['lon']]).add_to(self.map_object)
-                self.map_object.save("map.html")  # TODO: Dynamic map
+    def create_map(self, coordinates):
+        for coord in coordinates:
+            folium.Marker(location=[coord['lat'], coord['lon']]).add_to(self.map_object)
+            self.map_object.save("map.html")  # TODO: Dynamic map
