@@ -1,5 +1,6 @@
-from app.dao.rotator_client import RotatorClient
-from app.service.coordinate_transform_service import CoordinateTransformService
+from trackingapp.dao.rotator_client import RotatorClient
+
+from trackingapp.service.coordinate_transform_service import CoordinateTransformService
 
 
 class RotatorConfigureService:

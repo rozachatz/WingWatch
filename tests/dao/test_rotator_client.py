@@ -3,7 +3,7 @@ import time
 import pytest
 from testcontainers.compose import DockerCompose
 
-from app.dao.rotator_client import RotatorClient
+from trackingapp.dao.rotator_client import RotatorClient
 
 
 @pytest.fixture(scope="session")

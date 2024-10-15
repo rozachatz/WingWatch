@@ -1,5 +1,5 @@
 .env.secrets
 .venv
 tests/service/map.html
-app/service/map.html
+trackingapp/service/map.html
 .idea
