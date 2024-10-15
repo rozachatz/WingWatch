@@ -3,6 +3,14 @@ from trackingapp.dao.adsb_client import AdsbClient
 from trackingapp.service.rotator_configure_service import RotatorConfigureService
 
 
+def print_results(all_aircraft_data):
+    for aircraft in all_aircraft_data:
+        print(
+            f"Hex: {aircraft['hex']}, Latitude: {aircraft['lat']}, Longitude: {aircraft['lon']}, Altitude: {aircraft['altitude']}")
+    print(
+        "---------------------------------------------------------------------------------------------------------------------")
+
+
 class TrackService:
     def __init__(self, api_client: AdsbClient, rotator_service: RotatorConfigureService) -> None:
         self.selected_hex_id = None
@@ -13,16 +21,17 @@ class TrackService:
         self.selected_hex_id = hex_id
         return {'message': f'Tracking airplane {hex_id}'}
 
-    def fetch_data(self):
+    async def fetch_data(self):
         try:
-            all_aircraft_data = (self.api_client.getAdsb()).json()  # Ensure this is awaited
+            all_aircraft_data = (self.api_client.getAdsb()).json()
+            print_results(all_aircraft_data)
             if self.selected_hex_id:
                 selected_aircraft = next(
                     (aircraft for aircraft in all_aircraft_data if aircraft['hex'] == self.selected_hex_id),
                     None
                 )
                 if selected_aircraft:
-                    self.rotator_service.execute(
+                    await self.rotator_service.execute(
                         [selected_aircraft['lon'], selected_aircraft['lat'], selected_aircraft['altitude']])
                 else:
                     print(f"No aircraft found with hex ID: {self.selected_hex_id}")

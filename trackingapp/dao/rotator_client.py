@@ -1,9 +1,8 @@
 import socket
-import time
 
 
 class RotatorClient:
-    def execute(self, az, el):
+    async def execute(self, az, el):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('localhost', 4532)
 
@@ -13,7 +12,6 @@ class RotatorClient:
             # Construct the command as a single byte string
             command = b'P ' + bytes(f'{az} {el}', 'ascii') + b'\n'
             sock.sendall(command)
-            time.sleep(1)
         finally:
             print("Closing socket.")
             sock.close()

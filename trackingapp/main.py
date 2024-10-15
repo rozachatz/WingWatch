@@ -1,6 +1,5 @@
 import asyncio
 import os
-from time import sleep
 
 from dotenv import load_dotenv, find_dotenv
 
@@ -11,6 +10,7 @@ from trackingapp.service.map_service import MapService
 from trackingapp.service.rotator_configure_service import RotatorConfigureService
 from trackingapp.service.track_service import TrackService
 
+# Initializations
 env_file = find_dotenv(f'.env.{os.getenv("ENV", "secrets")}')
 load_dotenv(env_file)
 latitude = os.getenv("LATITUDE")
@@ -24,9 +24,11 @@ map_service = MapService()
 track_service = TrackService(api_client, rotator_service)
 
 
-def data_fetching_loop():
+async def data_fetching_loop():
     while True:
-        track_service.fetch_data()
-        sleep(1)
+        await track_service.fetch_data()
+        await asyncio.sleep(1)
 
-data_fetching_loop()
+
+if __name__ == "__main__":
+    asyncio.run(data_fetching_loop())
