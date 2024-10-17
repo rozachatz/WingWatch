@@ -4,6 +4,7 @@ import pytest
 from testcontainers.compose import DockerCompose
 
 from trackingapp.dao.rotator_client import RotatorClient
+from trackingapp.service.coordinate_transform_service import CoordinateTransformService
 
 
 @pytest.fixture(scope="session")
@@ -22,7 +23,13 @@ def fastapi_container():
     compose.stop()
 
 
-@pytest.mark.skip(reason="Requires a rotator device.")
-def test_example(client, fastapi_container):
-    client.execute(0, 0)
-    client.execute(130, 10)
+@pytest.fixture(scope="session")
+def coordinates():
+    return CoordinateTransformService(37.98, 23.76, 131)
+
+
+# @pytest.mark.skip(reason="Requires a rotator device.")
+@pytest.mark.asyncio
+async def test_example(client, coordinates):
+    await client.execute(0, 0)
+    await client.execute(130, 10)
