@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Style for the map container */
+        #map {
+
+            height: 100vh; /* Set height to 100% of the viewport height */
+            width: 100%;   /* Set full width */
+        }
+
+        /* Style for the popup button */
+        #popupButton {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000; /* Ensure it's above other layers */
+            text-align: center;
+        }
+
+        #popupButton a {
+            color: #007bff; /* Link color */
+            text-decoration: none; /* Remove underline */
+        }
+
+        #popupButton a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div> <!-- Div to hold the Leaflet map -->
+    <div id="popupButton">
+        <div id="popupContent"></div>
+        <a href="#" onclick="closePopup(); return false;">Close</a>
+    </div>
+
+    <!-- Include Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        // Initialize the Leaflet map
+        const map = L.map('map').setView([38.0, 23.0], 6); // Center at specified coordinates
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, // Maximum zoom level
+        }).addTo(map); // Add tile layer to the map
+
+        const airplaneIcon = L.icon({
+            iconUrl: '/static/images/pin.png', // Ensure this path is correct
+            iconSize: [32, 32], // Size of the icon
+            iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+            popupAnchor: [0, -40] // Position the popup above the icon
+        });
+
+        let markers = {}; // Object to store markers by hex ID
+
+        // Function to update the map with new aircraft data
+        async function updateMap() {
+            const response = await fetch('/api/aircraft'); // Fetch aircraft data from FastAPI
+            const data = await response.json(); // Parse the JSON response
+
+            // Clear existing markers from the map
+            for (const hex in markers) {
+                map.removeLayer(markers[hex]); // Remove marker from map
+            }
+            markers = {}; // Reset the markers object
+
+            // Add new markers for each aircraft
+            data.forEach(aircraft => {
+                const marker = L.marker([aircraft.lat, aircraft.lon], { icon: airplaneIcon }).addTo(map); // Create a new marker
+
+                // Add click event to marker to show popup button
+                marker.on('click', function() {
+                    document.getElementById('popupContent').innerHTML = `
+                        <strong>Aircraft Hex:</strong> ${aircraft.hex}<br>
+                        <a href="#" onclick="selectAircraft('${aircraft.hex}'); return false;">Track this aircraft</a>
+                    `;
+                    document.getElementById('popupButton').style.display = 'block'; // Show the button
+                });
+
+                markers[aircraft.hex] = marker; // Store the marker in the markers object
+            });
+        }
+
+        // Fetch data every 1.1 seconds
+        setInterval(updateMap, 1100);
+
+        // Function to select an aircraft when a link is clicked
+        function selectAircraft(hex) {
+            fetch(`/api/select_aircraft/${hex}`, { method: 'POST' }) // POST request to select aircraft
+                .then(response => response.json()) // Parse the JSON response
+                .then(data => {
+                    console.log(`Tracking aircraft: ${data.message}`); // Log the tracking message
+                    alert(`Now tracking aircraft: ${hex}`); // Alert the user
+                    closePopup(); // Close the popup
+                })
+                .catch(error => console.error('Error selecting aircraft:', error)); // Error handling
+        }
+
+        // Function to close the popup button
+        function closePopup() {
+            document.getElementById('popupButton').style.display = 'none'; // Hide the button
+        }
+
+        // Initial map load
+        updateMap(); // Call to load initial data
+    </script>
+</body>
+</html>

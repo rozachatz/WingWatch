@@ -8,5 +8,10 @@ Utilizes the dump1090 application to receive and process ADS-B data.
 ## Antenna Rotator Configuration
 Uses Hamlib software to configure and control your antenna rotator.
 ## Docker Compose Integration
-Simplifies deployment and depedency management of the application through Docker Compose. To build and start the application, run the command `docker-compose up --build`.
+Simplifies deployment and depedency management of the application through Docker Compose. 
+
+# Instructions
+To build and start the hardware integration application, run the command `docker-compose up --build`.
+To run the tracking software application execute `uvicorn trackingapp.main:trackingapp --reload`
+
 
