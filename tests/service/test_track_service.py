@@ -49,7 +49,7 @@ async def test_track_service_execute(mock_adsb_client, rotator_service, client, 
     i = 0
     lon = 5
     lat = 15
-    while i < 5:
+    while i < 10:
         mock_adsb_client.getAdsb.return_value.json.return_value = [
             {"lon": lon, "lat": lat, "altitude": 3000, "hex": "HSA23D"}]
         mock_adsb_client.getAdsb.return_value.status_code = 200
