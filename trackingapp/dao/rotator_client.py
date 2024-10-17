@@ -37,7 +37,6 @@ class RotatorClient:
 
             # Construct the command
             command = b'P ' + bytes(f'{az} {el}', 'ascii') + b'\n'
-
             print(f"Sending command: {command.strip()}")
             writer.write(command)
             await writer.drain()  # Ensure the command is sent
