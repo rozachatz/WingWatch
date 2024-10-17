@@ -18,6 +18,7 @@ class TrackService:
         self.selected_hex_id = None
         self.api_client = api_client
         self.rotator_service = rotator_service
+        self.all_aircraft_data = None
 
     def select_airplane(self, hex_id: str) -> str:
         self.selected_hex_id = hex_id
@@ -34,11 +35,11 @@ class TrackService:
             # Check if the response is valid before calling .json()
             if response.status_code == 200:
 
-                all_aircraft_data = response.json()
-                print_results(all_aircraft_data)
+                self.all_aircraft_data = response.json()
+                print_results(self.all_aircraft_data)
                 if self.selected_hex_id:
                     selected_aircraft = next(
-                        (aircraft for aircraft in all_aircraft_data if aircraft['hex'] == self.selected_hex_id),
+                        (aircraft for aircraft in self.all_aircraft_data if aircraft['hex'] == self.selected_hex_id),
                         None
                     )
                     if selected_aircraft:
@@ -54,3 +55,4 @@ class TrackService:
 
         except Exception as e:
             logger.error("Error fetching aircraft data: %s", e, exc_info=True)
+

@@ -4,11 +4,12 @@ import os
 
 from dotenv import load_dotenv, find_dotenv
 from fastapi import FastAPI
+from starlette.responses import FileResponse
+from starlette.staticfiles import StaticFiles
 
 from trackingapp.dao.adsb_client import AdsbClient
 from trackingapp.dao.rotator_client import RotatorClient
 from trackingapp.service.coordinate_transform_service import CoordinateTransformService
-from trackingapp.service.map_service import MapService
 from trackingapp.service.rotator_configure_service import RotatorConfigureService
 from trackingapp.service.track_service import TrackService
 
@@ -22,11 +23,10 @@ transformer = CoordinateTransformService(float(latitude), float(longitude), floa
 rotator_client = RotatorClient()
 rotator_service = RotatorConfigureService(transformer, rotator_client)
 api_client = AdsbClient()
-map_service = MapService()
 track_service = TrackService(api_client, rotator_service)
 
 trackingapp = FastAPI()
-
+trackingapp.mount("/static", StaticFiles(directory="static"), name="static")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -52,12 +52,18 @@ loop.create_task(start_background_task())
 
 
 @trackingapp.get("/")
-def root():
-    return {"Hello": "World"}
+async def read_root():
+    file_path = os.path.join(os.path.dirname(__file__), '../static/map.html')
+    return FileResponse(file_path)
 
 
-@trackingapp.get("/track/{hex_id}")
-def select_airplane(hex_id: str) -> str:
+@trackingapp.get("/api/aircraft")
+async def get_aircraft():
+    return track_service.all_aircraft_data
+
+
+@trackingapp.post("/api/select_aircraft/{hex_id}")
+def select_aircraft(hex_id: str) -> str:
     message = track_service.select_airplane(hex_id)
     return message
 

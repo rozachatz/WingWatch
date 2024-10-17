@@ -1,4 +1,4 @@
 .env.secrets
 .venv
-trackingapp/map.html
+static/map.html
 .idea
