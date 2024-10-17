@@ -4,10 +4,20 @@ import pymap3d as pm
 
 
 def enu_to_az_el(e, n, u):
-    #  Convert ENU (East, North, Up) coordinates to azimuth and elevation.
-    azimuth = (np.degrees(np.arctan2(e, n)) % 360) - 180  # Normalize to 0-360 degrees
-    distance_horizontal = np.sqrt(e ** 2 + n ** 2)  # Horizontal distance in ENU
+    # Convert ENU (East, North, Up) coordinates to azimuth and elevation.
+
+    # Calculate azimuth and normalize to [0, 360) degrees
+    azimuth = (np.degrees(np.arctan2(e, n)) + 360) % 360
+
+    # Calculate horizontal distance in ENU
+    distance_horizontal = np.sqrt(e ** 2 + n ** 2)
+
+    # Calculate elevation
     elevation = np.degrees(np.arctan2(u, distance_horizontal))
+
+    # Clamp elevation to a valid range (0 to 90 degrees)
+    elevation = max(0, min(elevation, 90))  # Adjust max value if needed
+
     return azimuth, elevation
 
 

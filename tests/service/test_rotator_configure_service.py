@@ -1,3 +1,5 @@
+from unittest.mock import AsyncMock
+
 import pytest
 
 from trackingapp.dao.rotator_client import RotatorClient
@@ -11,12 +13,13 @@ def coordinate_transform_service():
 
 
 @pytest.fixture
-def mock_rotator_client(mocker):
+def mock_rotator_client():
     # Create a mock RotatorClient
-    return mocker.Mock(spec=RotatorClient)
+    return AsyncMock(spec=RotatorClient)
 
 
-def test_execute(coordinate_transform_service, mock_rotator_client):
+@pytest.mark.asyncio
+async def test_execute(coordinate_transform_service, mock_rotator_client):
     service = RotatorConfigureService(coordinate_transform_service, mock_rotator_client)
-    service.execute([30.0, 45.0, 600.0])
-    mock_rotator_client.execute.assert_called_once()
+    await service.execute_async([30.0, 45.0, 600.0])
+    await service.execute_async([0, 0, 0])

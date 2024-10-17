@@ -8,7 +8,10 @@ class RotatorConfigureService:
         self.transformer = transformer
         self.rotator_client = rotator_client
 
-    def execute(self, coordinates):
-        azym, el = self.transformer.transform_coordinates(float(coordinates[0]), float(coordinates[1]),
-                                                          float(coordinates[2]))
-        self.rotator_client.execute(azym, el)
+    async def execute_async(self, coordinates):
+        azym, el = self.transformer.transform_coordinates(
+            float(coordinates[0]),
+            float(coordinates[1]),
+            float(coordinates[2])
+        )
+        await self.rotator_client.execute(azym, el)
