@@ -28,8 +28,8 @@ def coordinates():
     return CoordinateTransformService(37.98, 23.76, 131)
 
 
-# @pytest.mark.skip(reason="Requires a rotator device.")
+@pytest.mark.skip(reason="Requires a rotator device.")
 @pytest.mark.asyncio
 async def test_example(client, coordinates):
-    await client.execute(0, 0)
-    await client.execute(130, 10)
+    await client.execute_rotate_command(0, 0)
+    await client.execute_rotate_command(130, 10)

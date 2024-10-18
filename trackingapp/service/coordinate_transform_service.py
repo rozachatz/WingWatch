@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pymap3d as pm
@@ -40,7 +42,14 @@ def plot_figure(enu_coordinates):
     plt.show()
 
 
-class CoordinateTransformService:
+class AbstractCoordinateTransformService(ABC):
+
+    @abstractmethod
+    def transform_coordinates(self, target_lat, target_lon, target_el):
+        pass
+
+
+class CoordinateTransformService(AbstractCoordinateTransformService):
 
     def __init__(self, radar_lat, radar_lon, radar_el):
         self.radar_lat = radar_lat

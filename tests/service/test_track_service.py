@@ -10,28 +10,38 @@ from trackingapp.service.rotator_configure_service import RotatorConfigureServic
 from trackingapp.service.track_service import TrackService
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
+def rotator_service(rotator_client, coordinates):
+    return RotatorConfigureService(coordinates, rotator_client)
+
+
+@pytest.fixture(scope="function")
+def rotator_client():
+    return RotatorClient()
+
+
+@pytest.fixture(scope="function")
+def coordinates():
+    return CoordinateTransformService(50, 50, 100)
+
+
+@pytest.fixture(scope="function")
+def mocked_rotator_service(mocked_client, coordinates):
+    return RotatorConfigureService(coordinates, mocked_client)
+
+
+@pytest.fixture(scope="function")
+def mocked_client(mocker):
+    return mocker.Mock(spec=RotatorClient)
+
+
+@pytest.fixture(scope="function")
 def mock_adsb_client(mocker):
     # Create a mock AdsbClient
     return mocker.Mock(spec=AdsbClient)
 
 
-@pytest.fixture
-def rotator_service(client, coordinates):
-    return RotatorConfigureService(coordinates, client)
-
-
-@pytest.fixture(scope="session")
-def client():
-    return RotatorClient()
-
-
-@pytest.fixture(scope="session")
-def coordinates():
-    return CoordinateTransformService(50, 50, 100)
-
-
-@pytest.fixture(scope="session")  # Explicitly set the loop scope
+@pytest.fixture(scope="function")  # Explicitly set the loop scope
 def fastapi_container():
     print("Starting fastapi_container fixture...")  # Debug print
     compose = DockerCompose(".", services=["hamlib"])
@@ -41,18 +51,19 @@ def fastapi_container():
     yield
     compose.stop()
 
-# Full IT Test
+
+# Full IT Test with rotator
+@pytest.mark.skip(reason="Requires a rotator device.")
 @pytest.mark.asyncio
-async def test_track_service_execute(mock_adsb_client, rotator_service, client, fastapi_container):
-    await client.connect()
+async def test_track_service_execute(mock_adsb_client, rotator_service, rotator_client, fastapi_container):
     # Mock the response of getAdsb
     i = 0
     lon = 5
     lat = 15
     while i < 10:
-        mock_adsb_client.getAdsb.return_value.json.return_value = [
+        mock_adsb_client.get.return_value.json.return_value = [
             {"lon": lon, "lat": lat, "altitude": 3000, "hex": "HSA23D"}]
-        mock_adsb_client.getAdsb.return_value.status_code = 200
+        mock_adsb_client.get.return_value.status_code = 200
 
         track_service = TrackService(mock_adsb_client, rotator_service)
         track_service.select_airplane("HSA23D")
@@ -61,6 +72,21 @@ async def test_track_service_execute(mock_adsb_client, rotator_service, client, 
         lat = lat + 2 * i
         i = i + 1
 
-    # Assertions
-    await client.disconnect()
-    await client.execute(0, 0)
+
+@pytest.mark.asyncio
+async def test_track_service_execute(mock_adsb_client, mocked_rotator_service, mocked_client):
+    # Mock the response of getAdsb
+    i = 0
+    lon = 5
+    lat = 15
+    while i < 10:
+        mock_adsb_client.get.return_value.json.return_value = [
+            {"lon": lon, "lat": lat, "altitude": 3000, "hex": "HSA23D"}]
+        mock_adsb_client.get.return_value.status_code = 200
+
+        track_service = TrackService(mock_adsb_client, mocked_rotator_service)
+        track_service.select_airplane("HSA23D")
+        await track_service.fetch_data()
+        lon = lon + i
+        lat = lat + 2 * i
+        i = i + 1

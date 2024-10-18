@@ -21,5 +21,5 @@ def mock_rotator_client():
 @pytest.mark.asyncio
 async def test_execute(coordinate_transform_service, mock_rotator_client):
     service = RotatorConfigureService(coordinate_transform_service, mock_rotator_client)
-    await service.execute_async([30.0, 45.0, 600.0])
-    await service.execute_async([0, 0, 0])
+    await service.transform_and_rotate_antenna([30.0, 45.0, 600.0])
+    await service.transform_and_rotate_antenna([0, 0, 0])

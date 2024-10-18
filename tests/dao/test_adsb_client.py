@@ -24,5 +24,5 @@ def fastapi_container():
 
 @pytest.mark.skip(reason="Requires a RTL SDR device.")
 def test_example(client, fastapi_container):
-    response = client.getAdsb()
+    response = client.get()
     assert response.status_code == 200

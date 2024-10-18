@@ -1,8 +1,20 @@
 import asyncio
+from abc import abstractmethod, ABC
 from asyncio.log import logger
 
 from trackingapp.dao.adsb_client import AdsbClient
 from trackingapp.service.rotator_configure_service import RotatorConfigureService
+
+
+class AbstractTrackService(ABC):
+
+    @abstractmethod
+    def select_airplane(self, hex_id):
+        pass
+
+    @abstractmethod
+    def fetch_data(self):
+        pass
 
 
 def print_results(all_aircraft_data):
@@ -13,12 +25,11 @@ def print_results(all_aircraft_data):
         "---------------------------------------------------------------------------------------------------------------------")
 
 
-class TrackService:
+class TrackService(AbstractTrackService):
     def __init__(self, api_client: AdsbClient, rotator_service: RotatorConfigureService) -> None:
         self.selected_hex_id = None
         self.api_client = api_client
         self.rotator_service = rotator_service
-
 
     def select_airplane(self, hex_id: str) -> str:
         self.selected_hex_id = hex_id
@@ -30,7 +41,7 @@ class TrackService:
             logger.info("Fetching data...")
 
             # Run the synchronous getAdsb method in a separate thread and await the result
-            response = await asyncio.to_thread(self.api_client.getAdsb)
+            response = await asyncio.to_thread(self.api_client.get)
 
             # Check if the response is valid before calling .json()
             if response.status_code == 200:
@@ -44,7 +55,7 @@ class TrackService:
                     )
                     if selected_aircraft:
                         logger.info("Selected aircraft data: %s", selected_aircraft)
-                        await self.rotator_service.execute_async(
+                        await self.rotator_service.transform_and_rotate_antenna(
                             [selected_aircraft['lon'], selected_aircraft['lat'], selected_aircraft['altitude']]
                         )
                     else:
@@ -56,4 +67,3 @@ class TrackService:
 
         except Exception as e:
             logger.error("Error fetching aircraft data: %s", e, exc_info=True)
-
