@@ -1,3 +1,20 @@
-.env.secrets
-.venv
-.idea
+# Local settings and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+.idea/
+.DS_Store
+
+# Python environments and generated caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local recordings, exported runs, and generated fixture experiments.
+# Keep the small, reviewed demo under fixtures/radar-demo/ in version control.
+/local-data/

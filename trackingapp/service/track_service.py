@@ -45,7 +45,9 @@ class TrackService:
                     if selected_aircraft:
                         logger.info("Selected aircraft data: %s", selected_aircraft)
                         await self.rotator_service.execute_async(
-                            [selected_aircraft['lon'], selected_aircraft['lat'], selected_aircraft['altitude']]
+                            latitude=selected_aircraft['lat'],
+                            longitude=selected_aircraft['lon'],
+                            altitude_m=selected_aircraft['altitude'],
                         )
                     else:
                         logger.warning("No aircraft found with hex ID: %s", self.selected_hex_id)
