@@ -88,8 +88,8 @@ baseline saved from radar processing instead.
 Contour requests return 409 when the snapshot changed and 404 for a missing
 track. The browser ignores obsolete contour responses. Confidence can be null;
 confirmed tracks with misses map to coasting, while tentative tracks stay
-tentative. The current WingWatch model requires numeric frequency. The shared
-v2 schema still allows that field to be omitted. ADS-B data is a separate source.
+tentative. `frequency_mhz` is required in the WingWatch model and all shared
+RadarFrame v2 schema copies. ADS-B data is a separate source.
 WebSocket delivery, live radar ingestion, and historical frame endpoints are
 not implemented.
 
