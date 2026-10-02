@@ -111,7 +111,10 @@ WINGWATCH_MODE=hardware uvicorn trackingapp.main:trackingapp --reload
 ```
 
 `/api/aircraft` and aircraft selection retain the existing ADS-B path. Hardware
-integration code has not yet had the planned cleanup or hardware revalidation.
+mode does not load synthetic radar frames by default. Its radar endpoints
+return 503 unless `WINGWATCH_RADAR_FRAMES` names an exported frame directory.
+Hardware integration code has not yet had the planned cleanup or hardware
+revalidation.
 
 ## Demo ADS-B companion file
 

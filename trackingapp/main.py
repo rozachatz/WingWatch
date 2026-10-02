@@ -18,8 +18,9 @@ def create_app(mode: str | None = None, radar_service: RadarService | None = Non
     if mode not in {"demo", "hardware"}:
         raise ValueError("WINGWATCH_MODE must be demo or hardware")
     directory = os.getenv("WINGWATCH_RADAR_FRAMES")
-    radar = radar_service if radar_service is not None else RadarService(
-        directory=Path(directory) if directory else None)
+    radar = radar_service
+    if radar is None and (mode == "demo" or directory):
+        radar = RadarService(directory=Path(directory) if directory else None)
 
     @asynccontextmanager
     async def lifespan(app):
@@ -38,11 +39,13 @@ def create_app(mode: str | None = None, radar_service: RadarService | None = Non
                 float(os.environ["ALTITUDE"]))
             app.state.track_service = TrackService(
                 AdsbClient(), RotatorConfigureService(transformer, RotatorClient()))
-        await radar.restart()
+        if radar is not None:
+            await radar.restart()
         try:
             yield
         finally:
-            await radar.stop()
+            if radar is not None:
+                await radar.stop()
 
     app = FastAPI(lifespan=lifespan)
     app.state.radar_service = radar

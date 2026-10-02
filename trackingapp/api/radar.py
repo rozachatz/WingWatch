@@ -6,9 +6,16 @@ from trackingapp.models.radar_models import RadarFrame, RadarStatus
 router = APIRouter(tags=["radar"])
 
 
+def radar_service(request: Request):
+    radar = request.app.state.radar_service
+    if radar is None:
+        raise HTTPException(503, "radar_unavailable")
+    return radar
+
+
 @router.get("/api/v1/frames/latest", response_model=RadarFrame, response_model_exclude_none=False)
 async def latest_frame(request: Request):
-    radar = request.app.state.radar_service
+    radar = radar_service(request)
     if radar.latest is None:
         raise HTTPException(404, "frame_not_found")
     return radar.latest
@@ -17,7 +24,7 @@ async def latest_frame(request: Request):
 async def track_contour(track_id: int, request: Request, run_id: str, frame_index: int = Query(ge=0)):
     from trackingapp.service.range_contour_service import ASSUMED_ALTITUDE_M, range_contour
 
-    radar = request.app.state.radar_service
+    radar = radar_service(request)
     frame = radar.latest
     if frame is None:
         raise HTTPException(404, "frame_not_found")
@@ -38,12 +45,12 @@ async def track_contour(track_id: int, request: Request, run_id: str, frame_inde
 
 @router.post("/api/v1/replay/restart", response_model=RadarFrame)
 async def restart_replay(request: Request):
-    radar = request.app.state.radar_service
+    radar = radar_service(request)
     return await radar.restart()
 
 @router.get("/api/v1/status", response_model=RadarStatus)
 async def radar_status(request: Request):
-    radar = request.app.state.radar_service
+    radar = radar_service(request)
     latest = radar.latest
     return {"service_status": "ok", "mode": "replay", "source": radar.source,
             "run_id": latest.run_id if latest else None,

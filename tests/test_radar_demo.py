@@ -68,6 +68,16 @@ def test_demo_api_starts_without_hardware_and_stops_background_task(monkeypatch)
     assert service._task is None
 
 
+def test_hardware_mode_does_not_serve_synthetic_radar(monkeypatch):
+    monkeypatch.delenv('WINGWATCH_RADAR_FRAMES', raising=False)
+    app = create_app('hardware')
+    assert app.state.radar_service is None
+    client = TestClient(app)
+    assert client.get('/api/v1/frames/latest').status_code == 503
+    assert client.get('/api/v1/status').status_code == 503
+    assert client.post('/api/v1/replay/restart').status_code == 503
+
+
 def test_invalid_frames_are_rejected():
     frame = make_frame(2, 'demo', EPOCH).model_dump(mode='json')
     frame['targets'][0]['doppler_hz'] = float('nan')
