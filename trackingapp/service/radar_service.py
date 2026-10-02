@@ -5,6 +5,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from trackingapp.service.frame_replay_source import load_adsb, load_frames
+from trackingapp.service.demo_pointing_service import DemoPointingService
 
 DEFAULT_FRAMES = Path(__file__).parents[2]/'fixtures/radar-demo'
 
@@ -20,6 +21,7 @@ class RadarService:
         self.frames = load_frames(directory)
         self.adsb_frames = load_adsb(directory, self.frames)
         self.latest = None
+        self.demo_pointing = DemoPointingService()
         self.paused = True
         self._task = None
 
@@ -27,6 +29,7 @@ class RadarService:
         await self.stop()
         self.run_id = f'replay-{uuid4()}'
         self.latest = self.frames[0].model_copy(update={'run_id': self.run_id})
+        await self.demo_pointing.restart(self.latest, self.current_aircraft())
         self.paused = len(self.frames) == 1
         self._task = asyncio.create_task(self._replay())
         return self.latest
@@ -36,6 +39,7 @@ class RadarService:
             delay = (frame.timestamp-previous.timestamp).total_seconds()*self.interval_seconds
             await asyncio.sleep(delay)
             self.latest = frame.model_copy(update={'run_id': self.run_id})
+            await self.demo_pointing.advance(self.latest, self.current_aircraft())
         self.paused = True
 
     async def stop(self):

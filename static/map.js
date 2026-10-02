@@ -12,6 +12,52 @@
     let rangeContour = null;
     let focusedContourKey = null;
     let radarMapRunId = null;
+    let pointingLayer = null;
+    let pointingRequest = 0;
+    const pointingStatus = document.getElementById('pointing-status');
+    const demoTrackButton = document.getElementById('demo-track-aircraft');
+
+    function clearPointing() {
+        if (pointingLayer) map.removeLayer(pointingLayer);
+        pointingLayer = null;
+    }
+
+    async function updatePointing(frame) {
+        const requestNumber = ++pointingRequest;
+        clearPointing();
+        const query = new URLSearchParams({run_id: frame.run_id, frame_index: frame.frame_index});
+        try {
+            const response = await fetch(`/api/v1/pointing?${query}`, {cache: 'no-store'});
+            if (response.status === 409) return;
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const command = await response.json();
+            if (requestNumber !== pointingRequest || latestRadarSnapshot !== frame) return;
+            if (command.status === 'idle') {
+                pointingStatus.textContent = 'Simulated rotator: select a Demo ADS-B aircraft to show pointing.';
+                return;
+            }
+            if (command.status === 'no_report') {
+                pointingStatus.textContent = `Simulated rotator: no report for ${command.selected_hex} in this frame.`;
+                return;
+            }
+            const azimuth = command.command_azimuth_deg;
+            const elevation = command.command_elevation_deg;
+            pointingStatus.textContent = `Simulated rotator → ${command.selected_flight}: azimuth ${azimuth.toFixed(1)}°, elevation ${elevation.toFixed(1)}° · commanded direction`;
+            const lat = command.receiver.latitude;
+            const lon = command.receiver.longitude;
+            const bearing = azimuth * Math.PI / 180;
+            // Short line shows heading only; its length is not aircraft distance.
+            const tip = [lat + 2 / 111 * Math.cos(bearing),
+                         lon + 2 / (111 * Math.cos(lat * Math.PI / 180)) * Math.sin(bearing)];
+            pointingLayer = L.polyline([[lat, lon], tip],
+                {color: '#663399', weight: 4, dashArray: '5 4'}).addTo(map)
+                .bindTooltip('Simulated rotator direction');
+        } catch {
+            if (requestNumber === pointingRequest) {
+                pointingStatus.textContent = 'Simulated rotator: pointing data unavailable.';
+            }
+        }
+    }
     window.addEventListener('radar-frame', ({detail: frame}) => {
         latestRadarSnapshot = frame;
         // Hide older demo reports until the matching snapshot arrives.
@@ -19,6 +65,7 @@
             if (marker.isDemoAdsB) { map.removeLayer(marker); delete markers[hex]; }
         }
         updateMap();
+        updatePointing(frame);
         if (radarSites) map.removeLayer(radarSites);
         radarSites = L.layerGroup().addTo(map);
         for (const [label, site] of [['Receiver', frame.receiver], ['Transmitter', frame.transmitter]]) {
@@ -78,9 +125,11 @@
                 snapshot.frame_index !== latestRadarSnapshot.frame_index)) return;
             for (const marker of Object.values(markers)) map.removeLayer(marker);
             markers = {};
+            demoTrackButton.hidden = true;
             data.forEach(aircraft => {
                 if (!Number.isFinite(aircraft.lat) || !Number.isFinite(aircraft.lon)) return;
                 const demo = aircraft.source === 'demo_adsb';
+                if (demo) { demoTrackButton.hidden = false; demoTrackButton.dataset.hex = aircraft.hex; }
                 const label = `${demo ? 'Demo ADS-B' : 'ADS-B'} · ${aircraft.flight || aircraft.hex}`;
                 const marker = demo
                     ? L.circleMarker([aircraft.lat, aircraft.lon], {radius: 7, color: '#245ba0',
@@ -107,13 +156,11 @@
                         ? 'Synthetic aircraft from the demo trajectory. Automatic radar matching is not implemented.'
                         : `Aircraft ICAO: ${aircraft.hex}`;
                     content.append(title, details);
-                    if (!demo) {
-                        const button = document.createElement('button');
-                        button.type = 'button';
-                        button.textContent = 'Track this aircraft';
-                        button.addEventListener('click', () => selectAircraft(aircraft.hex));
-                        content.append(button);
-                    }
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = demo ? 'Track demo aircraft' : 'Track this aircraft';
+                    button.addEventListener('click', () => selectAircraft(aircraft.hex, demo));
+                    content.append(button);
                     document.getElementById('popupButton').style.display = 'block';
                 });
                 markers[aircraft.hex] = marker;
@@ -134,20 +181,30 @@
     setInterval(updateMap, 1000);
 
     // Function to select an aircraft when a link is clicked
-    function selectAircraft(hex) {
-        fetch(`/api/select_aircraft/${hex}`, { method: 'POST' }) // POST request to select aircraft
-            .then(response => response.json()) // Parse the JSON response
-            .then(data => {
-                alert(`Now tracking aircraft: ${hex}`); // Alert the user
-                closePopup(); // Close the popup
+    function selectAircraft(hex, demo) {
+        fetch(`/api/select_aircraft/${hex}`, { method: 'POST' })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
             })
-            .catch(error => console.error('Error selecting aircraft:', error)); // Error handling
+            .then(() => {
+                closePopup();
+                if (demo && latestRadarSnapshot) updatePointing(latestRadarSnapshot);
+                if (!demo) pointingStatus.textContent = 'Hardware rotator: aircraft selected; orientation feedback unavailable.';
+            })
+            .catch(error => {
+                pointingStatus.textContent = `Aircraft selection failed: ${error.message}`;
+            });
     }
 
     // Function to close the popup button
     function closePopup() {
         document.getElementById('popupButton').style.display = 'none'; // Hide the button
     }
+
+    demoTrackButton.addEventListener('click', () => {
+        if (demoTrackButton.dataset.hex) selectAircraft(demoTrackButton.dataset.hex, true);
+    });
 
     // Initial map load
     updateMap(); // Call to load initial data

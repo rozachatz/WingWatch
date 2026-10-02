@@ -9,6 +9,7 @@
     "mode",
     "frame_index",
     "timestamp",
+    "frequency_mhz",
     "receiver",
     "transmitter",
     "localization",

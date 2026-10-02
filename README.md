@@ -15,7 +15,10 @@ uvicorn trackingapp.main:trackingapp --reload
 ```
 
 Open http://127.0.0.1:8000. Click **Restart replay**, then **Track 1** when it
-appears to see the contour and moving Demo ADS-B marker. The demo finishes after
+appears to see the contour and moving Demo ADS-B marker. Click the blue demo
+aircraft and **Track demo aircraft**, or click **Track demo ADS-B** below the
+map, to show simulated rotator azimuth, elevation, and a short direction line
+from the receiver. The demo finishes after
 ten seconds; restart to watch it again. API documentation is at `/docs`.
 
 The default source is the bundled synthetic JSON
@@ -112,12 +115,15 @@ integration code has not yet had the planned cleanup or hardware revalidation.
 
 ## Demo ADS-B companion file
 
-The bundled fixture includes `adsb.json`: one synthetic aircraft, ICAO abc001 /
-DEMO01, with positions at 1,000 m WGS84 ellipsoidal altitude. Radar measurements
+`trackingapp/models/adsb_models.py` defines the demo `adsb.json` file contract.
+The bundled fixture includes one synthetic aircraft, ICAO abc001 / DEMO01,
+with positions at 1,000 m WGS84 ellipsoidal altitude. Radar measurements
 and ADS-B reports derive from the same constructed trajectory. Reports share
 radar measurement timestamps and advance/restart on the same replay clock.
 The aircraft marker is explicitly labelled Demo ADS-B, and the radar contour
 remains a possible-location contour. No automatic association is implemented.
+The simulated rotator follows only the aircraft selected by ICAO ID; its arrow indicates commanded direction, not
+physical motion or measured antenna feedback.
 
 Radar misses and deletion do not delete the ADS-B aircraft: it is still present
 in the companion reports. Radar `position` stays null. The generated reports are
@@ -127,7 +133,18 @@ For a directory without adsb.json, demo-mode `/api/aircraft` returns an empty
 list. If provided, the companion must cover every loaded radar frame (empty
 aircraft snapshots are allowed), use matching timestamps, and contain no duplicate
 indexes/aircraft. Only demo ADS-B reports are supported by this companion format
-for now. Real dump1090 reception remains the separate hardware-mode path.
+for now. Real dump1090 reception remains the separate hardware-mode path: it
+returns its existing ADS-B dictionaries and is not validated by the demo model.
+Before sharing one model with the live feed, its altitude units and reference
+datum must be verified and normalized.
+
+`GET /api/v1/pointing?run_id=...&frame_index=...` returns the simulated
+command for the current demo snapshot; stale requests return 409. Selection
+uses the existing `POST /api/select_aircraft/{hex_id}` route in demo mode.
+Replay restart clears selection and recorded commands. Demo pointing calls the
+same `RotatorConfigureService` as hardware mode, using a simulated client that
+records its commands. Hardware mode sends the command to Hamlib. Neither mode
+provides measured antenna orientation feedback.
 
 `GET /api/aircraft?run_id=...&frame_index=...` requests the current matching
 snapshot in demo mode; an outdated identity returns 409. This avoids displaying
@@ -145,8 +162,9 @@ python -m pytest tests/test_adsb_replay.py -q
 | `trackingapp/main.py` | Create the app, configure services/lifecycle, mount static files and include routers |
 | `trackingapp/api/radar.py` | Radar frames, status, replay restart and contours |
 | `trackingapp/api/aircraft.py` | ADS-B reports and aircraft selection |
-| `trackingapp/service/` | Replay, geometry, ADS-B tracking and pointing logic |
-| `trackingapp/models/` | Radar and ADS-B contracts |
+| `trackingapp/service/` | Replay, geometry, ADS-B tracking and hardware/demo pointing logic |
+| `trackingapp/dao/simulated_rotator_client.py` | Record demo antenna commands without opening a socket |
+| `trackingapp/models/` | Radar and demo ADS-B contracts, plus simulated pointing status |
 | `static/map.html` | Page markup |
 | `static/map.css` | Map, table and popup styles |
 | `static/map.js` | Map layers, aircraft markers, contours and popups |

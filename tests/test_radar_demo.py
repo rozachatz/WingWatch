@@ -64,7 +64,7 @@ def test_demo_api_starts_without_hardware_and_stops_background_task(monkeypatch)
         assert restarted['run_id'] != old_id
         assert restarted['frame_index'] == 1
         assert client.get('/api/v1/status').json()['source_connected'] is True
-        assert client.post('/api/select_aircraft/test').status_code == 409
+        assert client.post('/api/select_aircraft/test').status_code == 404
     assert service._task is None
 
 
@@ -83,6 +83,11 @@ def test_v2_unknown_confidence_and_required_numeric_frequency():
     assert frame.targets[0].confidence is None
     payload = frame.model_dump(mode='json')
     VALIDATOR.validate(payload)
+    missing = dict(payload)
+    del missing['frequency_mhz']
+    assert not VALIDATOR.is_valid(missing)
+    with pytest.raises(ValidationError):
+        RadarFrame.model_validate(missing)
     payload['frequency_mhz'] = None
     with pytest.raises(ValidationError):
         RadarFrame.model_validate(payload)

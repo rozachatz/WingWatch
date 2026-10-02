@@ -1,19 +1,19 @@
-import matplotlib.pyplot as plt
-import numpy as np
-import pymap3d as pm
+import math
+from trackingapp.models.radar_models import Site
+from trackingapp.service.geographic_coordinates import pointing_angles
 
 
 def enu_to_az_el(e, n, u):
     # Convert ENU (East, North, Up) coordinates to azimuth and elevation.
 
     # Calculate azimuth and normalize to [0, 360) degrees
-    azimuth = (np.degrees(np.arctan2(e, n)) + 360) % 360
+    azimuth = (math.degrees(math.atan2(e, n)) + 360) % 360
 
     # Calculate horizontal distance in ENU
-    distance_horizontal = np.sqrt(e ** 2 + n ** 2)
+    distance_horizontal = math.hypot(e, n)
 
     # Calculate elevation
-    elevation = np.degrees(np.arctan2(u, distance_horizontal))
+    elevation = math.degrees(math.atan2(u, distance_horizontal))
 
     # Clamp elevation to a valid range (0 to 90 degrees)
     elevation = max(0, min(elevation, 90))  # Adjust max value if needed
@@ -22,6 +22,8 @@ def enu_to_az_el(e, n, u):
 
 
 def plot_figure(enu_coordinates):
+    import matplotlib.pyplot as plt
+
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
     ax.set_title('3D Plot of Radar and Target Location')
@@ -48,10 +50,11 @@ class CoordinateTransformService:
         self.radar_el = radar_el
 
     def transform_coordinates(self, target_lat, target_lon, target_el):
-        # Convert geodetic coordinates to ENU coordinates
-        enu_coordinates = pm.geodetic2enu(target_lat, target_lon, target_el, self.radar_lat, self.radar_lon,
-                                          self.radar_el)
-        azimuth, elevation = enu_to_az_el(enu_coordinates[0], enu_coordinates[1], enu_coordinates[2])
+        receiver = Site(name='receiver', latitude=self.radar_lat, longitude=self.radar_lon,
+                        altitude_m=self.radar_el)
+        target = Site(name='aircraft', latitude=target_lat, longitude=target_lon,
+                      altitude_m=target_el)
+        azimuth, elevation = pointing_angles(receiver, target)
         print(f"Azimuth: {azimuth:.2f}°")
         print(f"Elevation: {elevation:.2f}°")
         return azimuth, elevation
