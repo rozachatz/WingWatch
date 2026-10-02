@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "run_id": "synthetic-ten-frame-fixture",
+  "mode": "replay",
+  "frame_index": 3,
+  "timestamp": "2026-10-01T12:00:02Z",
+  "frequency_mhz": 106.5,
+  "receiver": {
+    "name": "Demo Malaxa receiver",
+    "latitude": 35.4669583333,
+    "longitude": 24.0796027778,
+    "altitude_m": 640.0
+  },
+  "transmitter": {
+    "name": "Demo transmitter hypothesis",
+    "latitude": 35.5319138889,
+    "longitude": 24.0683722222,
+    "altitude_m": 111.0
+  },
+  "localization": {
+    "available": false,
+    "method": "none",
+    "note": "Synthetic radar replay. No geographic target position. Confidence is unavailable; no calibrated score exists."
+  },
+  "targets": [
+    {
+      "track_id": 1,
+      "status": "tentative",
+      "bistatic_range_m": 12400.0,
+      "excess_range_m": 5101.893892948973,
+      "range_rate_mps": -100.0,
+      "doppler_hz": 35.524576138603194,
+      "confidence": null,
+      "age_frames": 2,
+      "misses": 0,
+      "position": null
+    }
+  ],
+  "range_doppler_image_url": null
+}

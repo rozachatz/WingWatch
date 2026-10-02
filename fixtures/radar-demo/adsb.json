@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "frames": [
+    {
+      "frame_index": 1,
+      "timestamp": "2026-10-01T12:00:00Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.533912319067014,
+          "lon": 24.116362548501627,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:00Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 2,
+      "timestamp": "2026-10-01T12:00:01Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.532308502715985,
+          "lon": 24.116891093073008,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:01Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 3,
+      "timestamp": "2026-10-01T12:00:02Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.53071323391382,
+          "lon": 24.11734412103985,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:02Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 4,
+      "timestamp": "2026-10-01T12:00:03Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.52912915924653,
+          "lon": 24.117723625472365,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:03Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 5,
+      "timestamp": "2026-10-01T12:00:04Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.52755875561896,
+          "lon": 24.11803169754495,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:04Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 6,
+      "timestamp": "2026-10-01T12:00:05Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.52600433053175,
+          "lon": 24.118270508169758,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:05Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 7,
+      "timestamp": "2026-10-01T12:00:06Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.52446802391191,
+          "lon": 24.118442290679155,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:06Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 8,
+      "timestamp": "2026-10-01T12:00:07Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.52295181108363,
+          "lon": 24.118549324257344,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:07Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 9,
+      "timestamp": "2026-10-01T12:00:08Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.52145750710316,
+          "lon": 24.118593918846784,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:08Z",
+          "source": "demo_adsb"
+        }
+      ]
+    },
+    {
+      "frame_index": 10,
+      "timestamp": "2026-10-01T12:00:09Z",
+      "aircraft": [
+        {
+          "hex": "abc001",
+          "flight": "DEMO01",
+          "lat": 35.519986771810096,
+          "lon": 24.118578400718434,
+          "altitude": 1000.0,
+          "altitude_datum": "WGS84 ellipsoid",
+          "timestamp": "2026-10-01T12:00:09Z",
+          "source": "demo_adsb"
+        }
+      ]
+    }
+  ]
+}

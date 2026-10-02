@@ -1,0 +1,5 @@
+# Minimal dependencies for the hardware-free radar replay.
+fastapi==0.115.2
+pydantic==2.9.2
+uvicorn==0.31.1
+jsonschema[format]==4.23.0
